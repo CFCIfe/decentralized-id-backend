@@ -99,4 +99,4 @@ The server uses a MongoDB database to store and manage user information. Only au
 - **`PUT /did/profile/education-information`**  
   Create or update the user's education information.
 
-All of these endpoints are protected, requiring JWT authentication. Detailed API documentation is available via Swagger at `http://localhost:3000/api`.
+All of these endpoints are protected, requiring JWT authentication. Detailed API documentation is available via Swagger at `http://localhost:3000/swagger`.
