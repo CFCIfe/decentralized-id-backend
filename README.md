@@ -1,99 +1,102 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Decentralized ID Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is a NestJS backend application that authenticates users using decentralized identifiers (DIDs) and public key verification. Authenticated users can access and update personal, health, and educational information, with data securely stored in a MongoDB database.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [Environment Variables](#environment-variables)
+- [Authentication Flow](#authentication-flow)
+- [Database](#database)
+- [Endpoints](#endpoints)
+- [License](#license)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Getting Started
 
-## Project setup
+To set up this project, ensure you have the following:
 
+- Node.js (v14 or higher)
+- Yarn package manager
+- MongoDB instance (local or hosted)
+- Access to Algorand Testnet (optional, depending on usage)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/CFCIfe/decentralized-id-backend.git
+   cd decentralized-id-backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
+
+3. Configure environment variables (see [Environment Variables](#environment-variables)).
+
+## Running the Application
+
+Start the server in development mode:
 ```bash
-$ yarn install
+yarn start
 ```
 
-## Compile and run the project
+The server will start on `http://localhost:3000` by default.
 
-```bash
-# development
-$ yarn run start
+## Environment Variables
 
-# watch mode
-$ yarn run start:dev
+Create a `.env` file in the root directory with the following variables:
 
-# production mode
-$ yarn run start:prod
+```dotenv
+# MongoDB configuration
+MONGODB_URI='mongo_db_uri'
+MONGODB_DATABASE='db_name'
+
+# JWT configuration
+JWT_SECRET='your_jwt_secret'
+
+# Algorand Testnet configuration (optional)
+ALGOD_TOKEN=''
+ALGOD_SERVER='https://testnet-api.algonode.cloud'
+ALGOD_PORT=''
+INDEXER_TOKEN=''
+INDEXER_SERVER='https://testnet-idx.algonode.cloud'
+INDEXER_PORT=''
 ```
 
-## Run tests
+## Authentication Flow
 
-```bash
-# unit tests
-$ yarn run test
+This application uses decentralized identifiers (DIDs) for authentication with the following process:
 
-# e2e tests
-$ yarn run test:e2e
+1. **User Authentication**: On the client side, the user signs an authentication transaction with their private key.
+2. **Public Key Verification**: The server verifies the transaction by comparing the client-provided public key with the user’s registered DID.
+3. **JWT Token Generation**: If the keys match, the server generates a JWT token.
+4. **Access to Endpoints**: The JWT token enables the user to interact with various endpoints on the server.
 
-# test coverage
-$ yarn run test:cov
-```
+## Database
 
-## Deployment
+The server uses a MongoDB database to store and manage user information. Only authenticated users can access and modify their data.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Endpoints
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Authentication and Profile Management
 
-```bash
-$ yarn install -g mau
-$ mau deploy
-```
+- **`POST /did/auth/login`**  
+  Authenticate by verifying ownership of the DID.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- **`GET /did/profile`**  
+  Retrieve the authenticated user's profile information.
 
-## Resources
+- **`PUT /did/profile/personal-information`**  
+  Create or update the user's personal information.
 
-Check out a few resources that may come in handy when working with NestJS:
+- **`PUT /did/profile/health-information`**  
+  Create or update the user's health information.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **`PUT /did/profile/education-information`**  
+  Create or update the user's education information.
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+All of these endpoints are protected, requiring JWT authentication. Detailed API documentation is available via Swagger at `http://localhost:3000/api`.
